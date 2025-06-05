@@ -10,7 +10,7 @@ app.use(express.static('public'));
 // Middleware para interpretar JSON en requests POST
 app.use(express.json());
 
-// Ruta raíz: redirige a TikTok o muestra mensaje (puedes personalizar)
+// Ruta raíz: servir index.html para registro y redirección
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
@@ -26,9 +26,10 @@ app.post('/api/registro', (req, res) => {
     hora,
     navegador,
     nombre,
-    ubicacion,
+    ubicacion: ubicacion || null,
   };
 
+  // Guardar registro en archivo (añadiendo al final)
   fs.appendFile(
     path.join(__dirname, 'visitas.log'),
     JSON.stringify(registro) + '\n',
@@ -45,21 +46,6 @@ app.post('/api/registro', (req, res) => {
 // Ruta para testear servidor vivo
 app.get('/test', (req, res) => {
   res.send('Servidor está vivo y respondiendo!');
-});
-
-// Ruta para ver registros guardados
-app.get('/visitas', (req, res) => {
-  const filePath = path.join(__dirname, 'visitas.log');
-  fs.readFile(filePath, 'utf8', (err, data) => {
-    if (err) {
-      if (err.code === 'ENOENT') {
-        return res.send('No hay registros aún.');
-      }
-      return res.status(500).send('Error leyendo registros');
-    }
-    res.type('text/plain');
-    res.send(data);
-  });
 });
 
 // Iniciar servidor

@@ -7,7 +7,6 @@
 </head>
 <body>
   <script>
-    // Enviar los datos
     fetch('/api/registro', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -16,7 +15,6 @@
         nombre: 'Visitante'
       })
     }).finally(() => {
-      // Redirigir después de registrar
       window.location.href = 'https://www.tiktok.com/@reyganzo69/video/7482119548657732870?is_from_webapp=1&sender_device=pc';
     });
   </script>
