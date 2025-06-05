@@ -1,3 +1,5 @@
 {"ip":"::1","hora":"2025-06-04T22:58:34.759Z","navegador":"curl/7.64","nombre":"prueba manual","ubicacion":{"lat":0,"lon":0}}
 {"ip":"::1","hora":"2025-06-04T23:07:37.363Z","navegador":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.1 Safari/605.1.15","nombre":"Visitante","ubicacion":null}
 {"codigo":"reyganzo","ip":"::1","hora":"2025-06-04T23:34:28.904Z","navegador":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.1 Safari/605.1.15"}
+{"ip":"::1","hora":"2025-06-05T14:47:22.835Z","navegador":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.1 Safari/605.1.15","nombre":"Visitante","ubicacion":null}
+{"ip":"::1","hora":"2025-06-05T14:55:18.748Z","navegador":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.1 Safari/605.1.15","nombre":"Visitante","ubicacion":null}
