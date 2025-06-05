@@ -2,30 +2,28 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <title>Recolectando visita...</title>
+  <title>Recolector de Visitas</title>
 </head>
 <body>
-  <h1>Recolectando visita...</h1>
+  <p id="mensaje">Espera un momento...</p>
+
   <script>
-    const navegador = navigator.userAgent;
-    const nombre = "Visitante"; // Puedes cambiarlo si quieres pedir nombre
-
-    const datosVisita = {
-      navegador,
-      nombre,
-      ubicacion: null
-    };
-
+    // Enviar datos de visita al servidor
     fetch('/api/registro', {
       method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify(datosVisita)
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        nombre: 'Visitante',
+        navegador: navigator.userAgent,
+        ubicacion: null
+      })
     })
     .then(() => {
+      // Cuando se registre la visita, redirige al TikTok
       window.location.href = 'https://www.tiktok.com/@reyganzo69/video/7482119548657732870?is_from_webapp=1&sender_device=pc';
     })
     .catch(() => {
-      window.location.href = 'https://www.tiktok.com/@reyganzo69/video/7482119548657732870?is_from_webapp=1&sender_device=pc';
+      document.getElementById('mensaje').textContent = 'Error al registrar tu visita.';
     });
   </script>
 </body>
