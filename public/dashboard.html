@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Dashboard de Visitas</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    table { border-collapse: collapse; width: 100%; }
+    th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+    th { background-color: #f2f2f2; }
+    tr:nth-child(even) { background-color: #fafafa; }
+  </style>
+</head>
+<body>
+  <h1>Dashboard de Visitas</h1>
+  <table>
+    <thead>
+      <tr>
+        <th>Hora (Centroamérica)</th>
+        <th>IP</th>
+        <th>Navegador</th>
+        <th>Nombre</th>
+        <th>Ubicación</th>
+        <th>Resolución</th>
+        <th>Idioma</th>
+        <th>Plataforma</th>
+        <th>Referer</th>
+        <th>Red</th>
+        <th>Coordenadas GPS</th>
+      </tr>
+    </thead>
+    <tbody id="visitas-body"></tbody>
+  </table>
+
+  <script>
+    async function cargarVisitas() {
+      try {
+        const res = await fetch('/api/visitas');
+        const visitas = await res.json();
+
+        const tbody = document.getElementById('visitas-body');
+        tbody.innerHTML = '';
+
+        visitas.forEach(visita => {
+          const tr = document.createElement('tr');
+
+          // Formatear hora a Centroamérica
+          const fecha = new Date(visita.hora);
+          const horaLocal = fecha.toLocaleString('es-419', { timeZone: 'America/Guatemala' });
+
+          tr.innerHTML = `
+            <td>${horaLocal}</td>
+            <td>${visita.ip || ''}</td>
+            <td>${visita.navegador || ''}</td>
+            <td>${visita.nombre || ''}</td>
+            <td>${visita.ubicacion || ''}</td>
+            <td>${visita.resolucion || ''}</td>
+            <td>${visita.idioma || ''}</td>
+            <td>${visita.plataforma || ''}</td>
+            <td>${visita.referer || ''}</td>
+            <td>${visita.red || ''}</td>
+            <td>${visita.gps ? `Lat: ${visita.gps.latitude}, Lon: ${visita.gps.longitude}` : ''}</td>
+          `;
+          tbody.appendChild(tr);
+        });
+      } catch (error) {
+        console.error('Error cargando visitas:', error);
+      }
+    }
+
+    cargarVisitas();
+  </script>
+</body>
+</html>
+
