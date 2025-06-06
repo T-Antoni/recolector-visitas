@@ -7,7 +7,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(express.static('public'));
-app.use(express.json({ limit: '1mb' }));
+app.use(express.json({ limit: '2mb' }));  // Subí el límite por si hay más datos
 
 // Ruta POST para recibir datos
 app.post('/api/recibir', (req, res) => {
@@ -44,7 +44,18 @@ app.post('/api/recibir', (req, res) => {
     esBot: req.body.esBot || false,
     socialFromUA: req.body.socialFromUA || null,
     ubicacion: geo,
-    duracion: req.body.duracion || 0
+
+    // NUEVAS PROPIEDADES AGREGADAS:
+    fingerprint: req.body.fingerprint || null,
+    modoIncognito: req.body.modoIncognito || null,
+    esEmulador: req.body.esEmulador || null,
+    ipPublicaCliente: req.body.ipPublica || null,
+    permisosNavegador: req.body.permisos || null,
+    tipoNavegacion: req.body.tipoNavegacion || null,
+    duracion: req.body.duracionSegundos || 0,
+    interacciones: req.body.interacciones || 0,
+    hardware: req.body.hardware || null,
+    soportesAPIs: req.body.soportesAPIs || null,
   };
 
   fs.appendFile(path.join(__dirname, 'visitas.log'), JSON.stringify(visita) + '\n', err => {

