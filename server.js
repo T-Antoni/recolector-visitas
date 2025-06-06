@@ -1,65 +1,72 @@
-// server.js
 const express = require('express');
 const fs = require('fs');
 const path = require('path');
 const geoip = require('geoip-lite');
-const bodyParser = require('body-parser');
+const UAParser = require('ua-parser-js');
 const app = express();
-const port = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3000;
 
-app.use(express.static(path.join(__dirname, 'public')));
-app.use(bodyParser.json());
+app.use(express.static('public'));
+app.use(express.json({ limit: '1mb' }));
 
-// Ruta principal
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+app.post('/api/recibir', (req, res) => {
+  const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || '';
+  const geo = geoip.lookup(ip) || null;
+
+  const ua = new UAParser(req.body.userAgent || '');
+  const deviceInfo = ua.getResult();
+
+  const visita = {
+    nombre: 'Visitante',
+    ip,
+    hora: new Date().toISOString(),
+    userAgent: req.body.userAgent || '',
+    navegador: deviceInfo.browser.name + ' ' + deviceInfo.browser.version,
+    sistemaOperativo: deviceInfo.os.name + ' ' + deviceInfo.os.version,
+    plataforma: deviceInfo.device.vendor || 'Desconocida',
+    dispositivoTipo: deviceInfo.device.type || 'desktop',
+    dispositivoMarca: deviceInfo.device.vendor || 'Desconocida',
+    dispositivoModelo: deviceInfo.device.model || 'Desconocido',
+    resolucion: req.body.resolucion || '',
+    devicePixelRatio: req.body.devicePixelRatio,
+    idioma: req.body.idioma,
+    zonaHoraria: req.body.zonaHoraria,
+    referrer: req.body.referrer || '',
+    coords: req.body.coords || null,
+    tipoRed: req.body.tipoRed || null,
+    cookiesHabilitadas: req.body.cookiesHabilitadas || null,
+    soportaLocal: req.body.soportaLocal || null,
+    soportaSession: req.body.soportaSession || null,
+    pestañaActiva: req.body.pestañaActiva || null,
+    bateria: req.body.bateria || null,
+    almacenamiento: req.body.almacenamiento || null,
+    esBot: req.body.esBot || false,
+    socialFromReferrer: req.body.socialFromReferrer || null,
+    socialFromUA: req.body.socialFromUA || null,
+    ubicacion: geo,
+    duracion: req.body.duracion || 0
+  };
+
+  fs.appendFile(path.join(__dirname, 'visitas.log'), JSON.stringify(visita) + '\n', err => {
+    if (err) console.error('Error al guardar visita:', err);
+  });
+
+  res.sendStatus(200);
 });
 
-// Recibir datos del visitante
-app.post('/api/registrar', async (req, res) => {
-  try {
-    const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-    const geo = geoip.lookup(ip) || null;
-    const datos = {
-      ...req.body,
-      ip,
-      hora: new Date().toISOString(),
-      ubicacion: geo,
-    };
-
-    fs.appendFileSync('visitas.log', JSON.stringify(datos) + '\n');
-    res.status(200).json({ success: true });
-  } catch (err) {
-    res.status(500).json({ error: 'Error al guardar la visita' });
-  }
-});
-
-// API para ver las visitas
-app.get('/api/visitas', (req, res) => {
-  const filePath = path.join(__dirname, 'visitas.log');
-  if (!fs.existsSync(filePath)) return res.json([]);
-
-  const lines = fs.readFileSync(filePath, 'utf8')
-    .split('\n')
-    .filter(Boolean)
-    .map(line => {
-      try {
-        return JSON.parse(line);
-      } catch {
-        return null;
-      }
-    })
-    .filter(Boolean);
-
-  res.json(lines);
-});
-
-// Dashboard
 app.get('/dashboard', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'dashboard.html'));
 });
 
-app.listen(port, () => {
-  console.log(`Servidor escuchando en http://localhost:${port}`);
+app.get('/api/visitas', (req, res) => {
+  fs.readFile(path.join(__dirname, 'visitas.log'), 'utf8', (err, data) => {
+    if (err) return res.status(500).json({ error: 'Error leyendo visitas' });
+    const visitas = data.trim().split('\n').map(l => JSON.parse(l)).reverse();
+    res.json(visitas);
+  });
+});
+
+app.listen(PORT, () => {
+  console.log(`Servidor escuchando en http://localhost:${PORT}`);
 });
 
