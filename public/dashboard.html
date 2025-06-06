@@ -1,25 +1,30 @@
+<!-- public/dashboard.html -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Dashboard de Visitas</title>
   <style>
-    body { font-family: Arial, sans-serif; padding: 20px; background: #f0f0f0; }
-    h1 { color: #333; }
-    table { width: 100%; border-collapse: collapse; background: #fff; }
-    th, td { padding: 8px 12px; border: 1px solid #ccc; }
-    th { background: #eee; }
+    body { font-family: Arial, sans-serif; padding: 2rem; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+    th, td { border: 1px solid #ccc; padding: 0.5rem; text-align: left; }
+    th { background-color: #f2f2f2; }
+    tr:hover { background-color: #eef; }
   </style>
 </head>
 <body>
-  <h1>Visitas registradas</h1>
-  <table id="visitasTable">
+  <h1>Dashboard de Visitas</h1>
+  <table id="tabla-visitas">
     <thead>
       <tr>
         <th>IP</th>
         <th>Hora</th>
+        <th>OS</th>
         <th>Navegador</th>
-        <th>Nombre</th>
+        <th>Tipo</th>
+        <th>Resolución</th>
+        <th>Idioma</th>
         <th>Ubicación</th>
       </tr>
     </thead>
@@ -27,22 +32,28 @@
   </table>
 
   <script>
-    fetch('/api/visitas')
-      .then(res => res.json())
-      .then(data => {
-        const tbody = document.querySelector('#visitasTable tbody');
-        data.forEach(v => {
-          const tr = document.createElement('tr');
-          tr.innerHTML = `
-            <td>${v.ip}</td>
-            <td>${v.hora}</td>
-            <td>${v.navegador}</td>
-            <td>${v.nombre}</td>
-            <td>${v.ubicacion || ''}</td>
-          `;
-          tbody.appendChild(tr);
-        });
+    async function cargarVisitas() {
+      const res = await fetch('/api/visitas');
+      const visitas = await res.json();
+      const tbody = document.querySelector('tbody');
+
+      visitas.reverse().forEach(v => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${v.ip || ''}</td>
+          <td>${new Date(v.hora).toLocaleString()}</td>
+          <td>${v.sistemaOperativo || ''}</td>
+          <td>${v.navegador || ''}</td>
+          <td>${v.dispositivoTipo || ''}</td>
+          <td>${v.resolucion || ''}</td>
+          <td>${v.idioma || ''}</td>
+          <td>${v.ubicacion?.city || ''} ${v.ubicacion?.country || ''}</td>
+        `;
+        tbody.appendChild(row);
       });
+    }
+
+    cargarVisitas();
   </script>
 </body>
 </html>
