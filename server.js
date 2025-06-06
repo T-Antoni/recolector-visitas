@@ -9,6 +9,7 @@ const PORT = process.env.PORT || 3000;
 app.use(express.static('public'));
 app.use(express.json({ limit: '1mb' }));
 
+// Ruta POST para recibir datos
 app.post('/api/recibir', (req, res) => {
   const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || '';
   const geo = geoip.lookup(ip) || null;
@@ -41,7 +42,6 @@ app.post('/api/recibir', (req, res) => {
     bateria: req.body.bateria || null,
     almacenamiento: req.body.almacenamiento || null,
     esBot: req.body.esBot || false,
-    socialFromReferrer: req.body.socialFromReferrer || null,
     socialFromUA: req.body.socialFromUA || null,
     ubicacion: geo,
     duracion: req.body.duracion || 0
@@ -54,10 +54,12 @@ app.post('/api/recibir', (req, res) => {
   res.sendStatus(200);
 });
 
+// Dashboard
 app.get('/dashboard', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'dashboard.html'));
 });
 
+// Obtener visitas
 app.get('/api/visitas', (req, res) => {
   fs.readFile(path.join(__dirname, 'visitas.log'), 'utf8', (err, data) => {
     if (err) return res.status(500).json({ error: 'Error leyendo visitas' });
@@ -66,6 +68,7 @@ app.get('/api/visitas', (req, res) => {
   });
 });
 
+// Iniciar servidor
 app.listen(PORT, () => {
   console.log(`Servidor escuchando en http://localhost:${PORT}`);
 });
