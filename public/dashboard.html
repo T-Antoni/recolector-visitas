@@ -2,89 +2,251 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Dashboard de Visitas</title>
+  <title>Dashboard Completo - Todas las visitas</title>
   <style>
-    body { font-family: Arial, sans-serif; margin: 20px; background: #f4f4f4; }
-    h1 { text-align: center; }
-    .filtros { margin-bottom: 20px; text-align: center; }
-    table { border-collapse: collapse; width: 100%; background: white; }
-    th, td { border: 1px solid #ccc; padding: 8px; font-size: 14px; text-align: left; }
-    th { background: #333; color: white; position: sticky; top: 0; }
-    tr:nth-child(even) { background: #f9f9f9; }
-    .scrollable { max-height: 80vh; overflow-y: auto; }
+    * { box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 20px;
+      background: #f0f4f8;
+      color: #333;
+    }
+
+    h1 {
+      text-align: center;
+      color: #2c3e50;
+      margin-bottom: 15px;
+      font-weight: 700;
+    }
+
+    button {
+      display: inline-block;
+      margin: 0 10px 20px 10px;
+      padding: 10px 20px;
+      font-size: 16px;
+      border: none;
+      border-radius: 6px;
+      color: white;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    #btnActualizar { background: #2980b9; }
+    #btnActualizar:hover { background: #1c5980; }
+
+    #btnExportarPDF { background: #c0392b; }
+    #btnExportarPDF:hover { background: #922b21; }
+
+    .table-container {
+      overflow-x: auto;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      background: white;
+      max-height: 600px;
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      min-width: 2000px;
+    }
+
+    thead tr {
+      background: #34495e;
+      color: white;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    th, td {
+      padding: 10px 12px;
+      border-bottom: 1px solid #ddd;
+      vertical-align: top;
+      text-align: left;
+      font-size: 12px;
+      max-width: 300px;
+      word-wrap: break-word;
+    }
+
+    tbody tr:nth-child(even) { background-color: #f9fbfd; }
+    tbody tr:hover { background-color: #d6e6f5; }
+
+    pre {
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-size: 11px;
+      margin: 0;
+      font-family: 'Consolas', monospace;
+    }
   </style>
 </head>
 <body>
-  <h1>Dashboard de Visitas</h1>
-  <div class="filtros">
-    <input type="text" id="busqueda" placeholder="Buscar IP, navegador, fingerprint..." />
+
+  <h1>Dashboard Completo - Todas las Visitas</h1>
+  <div style="text-align:center;">
+    <button id="btnActualizar">Actualizar datos</button>
+    <button id="btnExportarPDF">Descargar PDF</button>
   </div>
-  <div class="scrollable">
-    <table id="tabla-visitas">
+
+  <div class="table-container">
+    <table id="tablaVisitas">
       <thead>
         <tr>
-          <th>Fecha</th>
+          <!-- Aquí van todos los <th> que ya tienes -->
+          <th>Hora</th>
           <th>IP</th>
-          <th>Fingerprint</th>
+          <th>Nombre</th>
+          <th>User Agent</th>
           <th>Navegador</th>
-          <th>SO</th>
-          <th>Tipo</th>
-          <th>Marca</th>
-          <th>Modelo</th>
+          <th>Sistema Operativo</th>
+          <th>Dispositivo Tipo</th>
+          <th>Dispositivo Marca</th>
+          <th>Dispositivo Modelo</th>
           <th>Resolución</th>
+          <th>Device Pixel Ratio</th>
           <th>Idioma</th>
-          <th>Zona</th>
-          <th>Red</th>
+          <th>Zona Horaria</th>
+          <th>Referrer</th>
+          <th>Coordenadas</th>
+          <th>Tipo de Red</th>
+          <th>Batería</th>
+          <th>Almacenamiento</th>
+          <th>Cookies Habilitadas</th>
+          <th>Soporta LocalStorage</th>
+          <th>Soporta SessionStorage</th>
+          <th>Pestaña Activa</th>
+          <th>Es Bot</th>
+          <th>Fingerprint</th>
           <th>Modo Incógnito</th>
-          <th>Emulador</th>
-          <th>Duración (s)</th>
+          <th>Es Emulador</th>
+          <th>IP Pública</th>
+          <th>Permisos Geolocalización</th>
+          <th>Permisos Cámara</th>
+          <th>Permisos Micrófono</th>
+          <th>Tipo Navegación</th>
           <th>Interacciones</th>
-          <th>Permisos</th>
+          <th>Duración Segundos</th>
+          <th>Hardware - Cores</th>
+          <th>Hardware - Memoria (GB)</th>
+          <th>Hardware - GPU</th>
+          <th>Soporte API - WebRTC</th>
+          <th>Soporte API - WebGL</th>
+          <th>Soporte API - Bluetooth</th>
+          <th>Soporte API - NFC</th>
+          <th>Soporte API - MIDI</th>
+          <th>Fingerprint Canvas</th>
+          <th>Fingerprint Audio</th>
+          <th>Fingerprint WebGL</th>
+          <th>AdBlock</th>
+          <th>DarkReader</th>
         </tr>
       </thead>
-      <tbody></tbody>
+      <tbody id="datosVisitas">
+        <tr><td colspan="45">Cargando datos...</td></tr>
+      </tbody>
     </table>
   </div>
 
+  <!-- Librerías JS PDF -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
+
   <script>
-    async function cargarVisitas() {
+  async function cargarDatos() {
+    const tbody = document.getElementById('datosVisitas');
+    tbody.innerHTML = '<tr><td colspan="45">Cargando datos...</td></tr>';
+
+    try {
       const res = await fetch('/api/visitas');
       const visitas = await res.json();
-      const tbody = document.querySelector("#tabla-visitas tbody");
-      tbody.innerHTML = "";
 
+      if (!visitas.length) {
+        tbody.innerHTML = '<tr><td colspan="45">No hay visitas registradas</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = '';
       visitas.forEach(v => {
-        const fila = document.createElement("tr");
-        fila.innerHTML = `
-          <td>${new Date(v.hora).toLocaleString()}</td>
-          <td>${v.ip}</td>
-          <td>${v.fingerprint || '—'}</td>
-          <td>${v.navegador}</td>
-          <td>${v.sistemaOperativo}</td>
-          <td>${v.dispositivoTipo}</td>
-          <td>${v.dispositivoMarca}</td>
-          <td>${v.dispositivoModelo}</td>
-          <td>${v.resolucion}</td>
-          <td>${v.idioma}</td>
-          <td>${v.zonaHoraria}</td>
-          <td>${v.tipoRed || '—'}</td>
-          <td>${v.modoIncognito ? 'Sí' : 'No'}</td>
-          <td>${v.esEmulador ? 'Sí' : 'No'}</td>
-          <td>${v.duracion || 0}</td>
+        tbody.innerHTML += `
+        <tr>
+          <td>${new Date(v.hora).toLocaleString() || '-'}</td>
+          <td>${v.ip || '-'}</td>
+          <td>${v.nombre || '-'}</td>
+          <td><pre>${v.userAgent || '-'}</pre></td>
+          <td>${v.navegador || '-'}</td>
+          <td>${v.sistemaOperativo || '-'}</td>
+          <td>${v.dispositivoTipo || '-'}</td>
+          <td>${v.dispositivoMarca || '-'}</td>
+          <td>${v.dispositivoModelo || '-'}</td>
+          <td>${v.resolucion || '-'}</td>
+          <td>${v.devicePixelRatio || '-'}</td>
+          <td>${v.idioma || '-'}</td>
+          <td>${v.zonaHoraria || '-'}</td>
+          <td>${v.referrer || '-'}</td>
+          <td>${v.coordenadas || '-'}</td>
+          <td>${v.tipoRed || '-'}</td>
+          <td>${v.bateria || '-'}</td>
+          <td>${v.almacenamiento || '-'}</td>
+          <td>${v.cookiesHabilitadas}</td>
+          <td>${v.localStorage}</td>
+          <td>${v.sessionStorage}</td>
+          <td>${v.pestanaActiva}</td>
+          <td>${v.esBot}</td>
+          <td><pre>${v.fingerprint}</pre></td>
+          <td>${v.incognito}</td>
+          <td>${v.esEmulador}</td>
+          <td>${v.ipPublica || '-'}</td>
+          <td>${v.permisoGeolocalizacion}</td>
+          <td>${v.permisoCamara}</td>
+          <td>${v.permisoMicrofono}</td>
+          <td>${v.tipoNavegacion || '-'}</td>
           <td>${v.interacciones || 0}</td>
-          <td>
-            ${v.permisos ? Object.entries(v.permisos).map(([k, val]) => `${k}: ${val}`).join('<br>') : '—'}
-          </td>
-        `;
-        tbody.appendChild(fila);
+          <td>${v.duracion || 0}</td>
+          <td>${v.hardwareCores || '-'}</td>
+          <td>${v.hardwareMemoria || '-'}</td>
+          <td>${v.hardwareGPU || '-'}</td>
+          <td>${v.apiWebRTC}</td>
+          <td>${v.apiWebGL}</td>
+          <td>${v.apiBluetooth}</td>
+          <td>${v.apiNFC}</td>
+          <td>${v.apiMIDI}</td>
+          <td><pre>${v.canvasFingerprint}</pre></td>
+          <td><pre>${v.audioFingerprint}</pre></td>
+          <td><pre>${v.webglFingerprint}</pre></td>
+          <td>${v.adBlockDetectado}</td>
+          <td>${v.darkReaderDetectado}</td>
+        </tr>`;
       });
+    } catch (error) {
+      tbody.innerHTML = `<tr><td colspan="45" style="color:red;">Error cargando datos: ${error.message}</td></tr>`;
     }
+  }
 
-    document.getElementById("busqueda").addEventListener("input", e => {
-      const valor = e.target.value.toLowerCase();
-      document.querySelectorAll("#tabla-visitas tbody tr").forEach(tr => {
-        tr.style.display = [...tr.children].some(td => td.textContent.toLowerCase().includes(valor)) ? '' : 'none';
-      });
+  document.getElementById('btnActualizar').addEventListener('click', cargarDatos);
+  window.addEventListener('DOMContentLoaded', cargarDatos);
+
+  document.getElementById('btnExportarPDF').addEventListener('click', () => {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ orientation: 'landscape', unit: 'pt', format: 'a4' });
+    doc.text("Dashboard de Visitas - Datos Completos", 40, 40);
+    doc.autoTable({
+      html: '#tablaVisitas',
+      startY: 60,
+      styles: {
+        fontSize: 6,
+        cellPadding: 2,
+        overflow: 'linebreak'
+      },
+      headStyles: {
+        fillColor: [52, 73, 94],
+        textColor: 255
+      }
     });
+    doc.save("visitas_completas.pdf");
+  });
+  </script>
+
+</body>
+</html>
 

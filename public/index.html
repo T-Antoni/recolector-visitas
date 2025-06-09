@@ -1,4 +1,3 @@
-<!-- public/index.html -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -6,230 +5,190 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Redirigiendo...</title>
   <script src="https://cdn.jsdelivr.net/npm/@fingerprintjs/fingerprintjs@3/dist/fp.min.js"></script>
-  <script>
-    async function recopilarDatos() {
-      const start = Date.now();
-
-      // FingerprintJS v3
-      const fp = await FingerprintJS.load();
-      const result = await fp.get();
-      const fingerprint = result.visitorId;
-
-      // Detectar modo incógnito
-      async function detectarIncognito() {
-        return new Promise((resolve) => {
-          const fs = window.RequestFileSystem || window.webkitRequestFileSystem;
-          if (!fs) return resolve(false);
-          fs(window.TEMPORARY, 100, () => resolve(false), () => resolve(true));
-        });
-      }
-      const modoIncognito = await detectarIncognito();
-
-      // Detectar emulador (simple heurística)
-      const esEmulador = /emulator|simulator|android.*sdk|genymotion/i.test(navigator.userAgent) || 
-                        (window.navigator.platform === "Win32" && navigator.maxTouchPoints > 0 && screen.width <= 800);
-
-      // IP pública real
-      async function obtenerIpPublica() {
-        try {
-          const resp = await fetch('https://api64.ipify.org?format=json');
-          if (!resp.ok) return null;
-          const json = await resp.json();
-          return json.ip || null;
-        } catch {
-          return null;
-        }
-      }
-      const ipPublica = await obtenerIpPublica();
-
-      // Permisos navegador (geolocation, camera, microphone)
-      async function consultarPermiso(name) {
-        if (!navigator.permissions) return 'unsupported';
-        try {
-          const status = await navigator.permissions.query({ name });
-          return status.state;
-        } catch {
-          return 'unsupported';
-        }
-      }
-      const permisos = {
-        geolocation: await consultarPermiso('geolocation'),
-        camera: await consultarPermiso('camera'),
-        microphone: await consultarPermiso('microphone')
-      };
-
-      // Tipo de navegación (normal, reload, back_forward, prerender)
-      let tipoNavegacion = 'desconocido';
-      if (performance.getEntriesByType) {
-        const entries = performance.getEntriesByType("navigation");
-        if (entries.length > 0) tipoNavegacion = entries[0].type || tipoNavegacion;
-      } else if (performance.navigation) {
-        const type = performance.navigation.type;
-        tipoNavegacion = ['navigate', 'reload', 'back_forward'][type] || 'desconocido';
-      }
-
-      // Contar interacciones del usuario
-      let interacciones = 0;
-      function sumarInteraccion() { interacciones++; }
-      ['click', 'keydown', 'touchstart', 'mousemove'].forEach(evento => {
-        window.addEventListener(evento, sumarInteraccion);
-      });
-
-      // Esperamos unos segundos para medir duración e interacciones
-      await new Promise(r => setTimeout(r, 3000));
-      const duracionSegundos = Math.floor((Date.now() - start) / 1000);
-
-      // Datos de hardware
-      const hardware = {
-        cores: navigator.hardwareConcurrency || null,
-        memoryGB: navigator.deviceMemory || null,
-        gpu: (() => {
-          try {
-            const canvas = document.createElement('canvas');
-            const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
-            if (!gl) return null;
-            const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
-            if (!debugInfo) return null;
-            return gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL);
-          } catch {
-            return null;
-          }
-        })()
-      };
-
-      // Soporte APIs
-      const soportesAPIs = {
-        webRTC: !!(window.RTCPeerConnection || window.mozRTCPeerConnection || window.webkitRTCPeerConnection),
-        webGL: (() => {
-          try {
-            const canvas = document.createElement('canvas');
-            return !!(canvas.getContext('webgl') || canvas.getContext('experimental-webgl'));
-          } catch { return false; }
-        })(),
-        bluetooth: 'bluetooth' in navigator,
-        nfc: 'nfc' in navigator,
-        midi: 'requestMIDIAccess' in navigator
-      };
-
-      // Otros datos básicos
-      const battery = await navigator.getBattery?.();
-      const deviceMemory = navigator.deviceMemory || null;
-      const lang = navigator.language;
-      const platform = navigator.platform;
-      const userAgent = navigator.userAgent;
-      const resolution = `${screen.width}x${screen.height}`;
-      const referrer = document.referrer;
-      const tipoRed = navigator.connection?.effectiveType || null;
-      const zonaHoraria = Intl.DateTimeFormat().resolvedOptions().timeZone;
-      const cookiesHabilitadas = navigator.cookieEnabled;
-      const soporteLocal = !!window.localStorage;
-      const soporteSession = !!window.sessionStorage;
-      const pestañaActiva = document.visibilityState === 'visible';
-
-      const almacenamiento = await navigator.storage?.estimate?.();
-
-      const coords = await new Promise(resolve => {
-        navigator.geolocation?.getCurrentPosition(
-          pos => resolve(pos.coords),
-          () => resolve(null),
-          { timeout: 1000 }
-        );
-      });
-
-      const esBot = /bot|crawler|spider|crawling/i.test(userAgent);
-
-      // Enviar datos al backend
-      const data = {
-        nombre: 'Visitante',
-        userAgent,
-        plataforma: platform,
-        navegador: detectarNavegador(userAgent),
-        sistemaOperativo: detectarSO(userAgent),
-        dispositivoTipo: detectarTipo(userAgent),
-        dispositivoMarca: detectarMarca(userAgent),
-        dispositivoModelo: detectarModelo(userAgent),
-        resolucion: resolution,
-        devicePixelRatio: window.devicePixelRatio,
-        idioma: lang,
-        zonaHoraria,
-        referrer,
-        coords,
-        tipoRed,
-        bateria: battery ? {
-          cargando: battery.charging,
-          nivel: battery.level
-        } : null,
-        almacenamiento: almacenamiento || null,
-        cookiesHabilitadas,
-        soportaLocal: soporteLocal,
-        soportaSession: soporteSession,
-        pestañaActiva,
-        esBot,
-
-        // NUEVAS PROPIEDADES
-        fingerprint,
-        modoIncognito,
-        esEmulador,
-        ipPublica,
-        permisos,
-        tipoNavegacion,
-        duracionSegundos,
-        interacciones,
-        hardware,
-        soportesAPIs
-      };
-
-      await fetch('/api/recibir', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
-      });
-
-      // Redirigir rápido después de enviar datos
-      window.location.href = "https://www.tiktok.com/@funados510/video/7512617576338394374?q=funados%20este";
-    }
-
-    // Funciones auxiliares para detectar navegador, SO, tipo, marca, modelo
-    function detectarNavegador(ua) {
-      if (ua.includes("Firefox")) return "Firefox";
-      if (ua.includes("Edg")) return "Edge";
-      if (ua.includes("Chrome")) return "Chrome";
-      if (ua.includes("Safari")) return "Safari";
-      return "Desconocido";
-    }
-
-    function detectarSO(ua) {
-      if (ua.includes("Windows")) return "Windows";
-      if (ua.includes("Mac OS")) return "Mac OS";
-      if (ua.includes("Android")) return "Android";
-      if (ua.includes("Linux")) return "Linux";
-      if (ua.includes("iPhone") || ua.includes("iPad")) return "iOS";
-      return "Desconocido";
-    }
-
-    function detectarTipo(ua) {
-      if (/mobile|iphone|android/i.test(ua)) return "móvil";
-      if (/tablet|ipad/i.test(ua)) return "tablet";
-      return "desktop";
-    }
-
-    function detectarMarca(ua) {
-      if (/Samsung/i.test(ua)) return "Samsung";
-      if (/Huawei/i.test(ua)) return "Huawei";
-      if (/Xiaomi/i.test(ua)) return "Xiaomi";
-      if (/iPhone|iPad/i.test(ua)) return "Apple";
-      if (/Windows/i.test(ua)) return "Microsoft";
-      return "desconocida";
-    }
-
-    function detectarModelo(ua) {
-      const match = ua.match(/\(([^)]+)\)/);
-      return match ? match[1] : "desconocido";
-    }
-
-    recopilarDatos();
-  </script>
+  <script src="https://cdn.jsdelivr.net/npm/ua-parser-js@1/dist/ua-parser.min.js"></script>
 </head>
-<body></body>
+<body>
+<script>
+(async () => {
+  const start = Date.now();
+  const ua = new UAParser();
+  const userAgent = navigator.userAgent;
+  const device = ua.getDevice();
+  const browser = ua.getBrowser();
+  const os = ua.getOS();
+
+  const canvasFingerprint = (() => {
+    try {
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d");
+      ctx.textBaseline = "top";
+      ctx.font = "14px 'Arial'";
+      ctx.fillStyle = "#f60";
+      ctx.fillRect(125, 1, 62, 20);
+      ctx.fillStyle = "#069";
+      ctx.fillText("canvas-fingerprint", 2, 15);
+      return canvas.toDataURL();
+    } catch { return null; }
+  })();
+
+  const audioFingerprint = await (async () => {
+    try {
+      const ctx = new (window.OfflineAudioContext || window.webkitOfflineAudioContext)(1, 44100, 44100);
+      const osc = ctx.createOscillator();
+      osc.type = "triangle";
+      osc.frequency.setValueAtTime(10000, ctx.currentTime);
+      const compressor = ctx.createDynamicsCompressor();
+      osc.connect(compressor);
+      compressor.connect(ctx.destination);
+      osc.start(0);
+      const buffer = await ctx.startRendering();
+      return buffer.getChannelData(0).slice(4500, 5000).reduce((a, b) => a + Math.abs(b), 0).toString();
+    } catch { return null; }
+  })();
+
+  const webglFingerprint = (() => {
+    try {
+      const canvas = document.createElement('canvas');
+      const gl = canvas.getContext('webgl');
+      const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
+      return debugInfo ? gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL) : null;
+    } catch { return null; }
+  })();
+
+  async function detectarIncognito() {
+    const fs = window.RequestFileSystem || window.webkitRequestFileSystem;
+    if (!fs) return false;
+    return new Promise(resolve => {
+      fs(window.TEMPORARY, 100, () => resolve(false), () => resolve(true));
+    });
+  }
+
+  async function obtenerIpPublica() {
+    try {
+      const r = await fetch("https://api64.ipify.org?format=json");
+      const j = await r.json();
+      return j.ip || null;
+    } catch {
+      return null;
+    }
+  }
+      
+  async function consultarPermiso(name) {
+    if (!navigator.permissions) return 'unsupported';
+    try {
+      const status = await navigator.permissions.query({ name });
+      return status.state;
+    } catch {
+      return 'unsupported'; 
+    }  
+  }
+  
+  function detectarExtensiones() {
+    const extensiones = {
+      adblock: !!document.getElementById('adsbox'),
+      darkReader: !!document.querySelector('[class*="darkreader"]')  
+    };
+    return extensiones;
+  }
+
+  let interacciones = 0;
+  ['click', 'keydown', 'mousemove', 'touchstart'].forEach(evt =>
+    window.addEventListener(evt, () => interacciones++)
+  );
+       
+  const fp = await FingerprintJS.load();
+  const fingerprint = (await fp.get()).visitorId;
+    
+  // Esperar 3 segundos para captar interacciones y duración
+  await new Promise(r => setTimeout(r, 3000));
+  const duracionSegundos = Math.floor((Date.now() - start) / 1000);
+  
+  const battery = await navigator.getBattery?.();
+  const almacenamiento = await navigator.storage?.estimate?.();
+  const coords = await new Promise(resolve => {
+    navigator.geolocation?.getCurrentPosition(
+      pos => resolve(pos.coords),
+      () => resolve(null),
+      { timeout: 1000 }
+    );
+  });
+  
+  const data = {
+    nombre: "Visitante",
+    userAgent,
+    navegador: browser.name,
+    sistemaOperativo: os.name,
+    dispositivoTipo: device.type || "desktop",
+    dispositivoMarca: device.vendor || "desconocida",
+    dispositivoModelo: device.model || "desconocido",
+    resolucion: `${screen.width}x${screen.height}`,
+    devicePixelRatio: window.devicePixelRatio,
+    idioma: navigator.language,
+    zonaHoraria: Intl.DateTimeFormat().resolvedOptions().timeZone,
+    referrer: document.referrer,
+    coords,
+    tipoRed: navigator.connection?.effectiveType || null,
+    bateria: battery ? {
+      cargando: battery.charging,
+      nivel: battery.level
+    } : null,
+    almacenamiento,
+    cookiesHabilitadas: navigator.cookieEnabled,
+    soportaLocal: !!window.localStorage,
+    soportaSession: !!window.sessionStorage,
+    pestañaActiva: document.visibilityState === 'visible',
+    esBot: /bot|crawler|spider|crawling/i.test(userAgent),
+  
+    fingerprint,
+    modoIncognito: await detectarIncognito(),
+    esEmulador: /emulator|simulator|sdk/i.test(userAgent),
+    ipPublica: await obtenerIpPublica(),
+    permisos: {
+      geolocation: await consultarPermiso('geolocation'),
+      camera: await consultarPermiso('camera'),
+      microphone: await consultarPermiso('microphone')
+    },
+    tipoNavegacion: performance.getEntriesByType("navigation")[0]?.type || "desconocido",
+    interacciones,
+    duracionSegundos,   
+    hardware: {
+      cores: navigator.hardwareConcurrency || null,
+      memoryGB: navigator.deviceMemory || null,
+      gpu: webglFingerprint
+    },
+    soportesAPIs: {
+      webRTC: !!window.RTCPeerConnection,
+      webGL: !!(document.createElement('canvas').getContext('webgl')),
+      bluetooth: 'bluetooth' in navigator,
+      nfc: 'nfc' in navigator,
+      midi: 'requestMIDIAccess' in navigator
+    },
+    fingerprintAvanzado: {
+      canvas: canvasFingerprint,
+      audio: audioFingerprint,   
+      webgl: webglFingerprint
+    },
+    extensionesDetectadas: detectarExtensiones()
+  };
+   
+  const jsonData = JSON.stringify(data);
+
+  // Enviar en segundo plano con fetch (sendBeacon puede fallar en localhost)
+  fetch("/api/recibir", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: jsonData
+  }).catch(e => console.error('Error enviando datos:', e));
+
+  // Redirigir rápido
+  setTimeout(() => {
+    window.location.href = "https://www.tiktok.com/@funados510/video/7512617576338394374?q=funados%20este";
+  }, 300);
+})();
+</script>
+  
+<!-- Elemento oculto para detección de AdBlock --> 
+<div id="adsbox" style="height:1px;width:1px;position:absolute;left:-999px;"></div>
+</body>
 </html>
 

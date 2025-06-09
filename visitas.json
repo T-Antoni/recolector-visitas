@@ -1,0 +1,330 @@
+[
+  {
+    "nombre": "Visitante",
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.1 Safari/605.1.15",
+    "plataforma": "MacIntel",
+    "navegador": "Safari",
+    "sistemaOperativo": "Mac OS",
+    "dispositivoTipo": "desktop",
+    "dispositivoMarca": "desconocida",
+    "dispositivoModelo": "Macintosh; Intel Mac OS X 10_15_7",
+    "resolucion": "1920x1080",
+    "devicePixelRatio": 1,
+    "idioma": "es-419",
+    "zonaHoraria": "America/Managua",
+    "referrer": "",
+    "coords": null,
+    "tipoRed": null,
+    "bateria": null,
+    "almacenamiento": {
+      "quota": 82463372084,
+      "usage": 0
+    },
+    "cookiesHabilitadas": true,
+    "soportaLocal": true,
+    "soportaSession": true,
+    "pestañaActiva": true,
+    "esBot": false,
+    "fingerprint": "95e1edcb16de49a76afbf3dccdc57438",
+    "modoIncognito": false,
+    "esEmulador": false,
+    "ipPublica": "186.77.180.147",
+    "permisos": {
+      "geolocation": "prompt",
+      "camera": "prompt",
+      "microphone": "prompt"
+    },
+    "tipoNavegacion": "reload",
+    "duracionSegundos": 3,
+    "interacciones": 0,
+    "hardware": {
+      "cores": 8,
+      "memoryGB": null,
+      "gpu": "Apple GPU"
+    },
+    "soportesAPIs": {
+      "webRTC": true,
+      "webGL": true,
+      "bluetooth": false,
+      "nfc": false,
+      "midi": false
+    },
+    "ip": "::1",
+    "hora": "2025-06-07T15:38:49.009Z"
+  },
+  {
+    "nombre": "Visitante",
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.1 Safari/605.1.15",
+    "plataforma": "MacIntel",
+    "navegador": "Safari",
+    "sistemaOperativo": "Mac OS",
+    "dispositivoTipo": "desktop",
+    "dispositivoMarca": "desconocida",
+    "dispositivoModelo": "Macintosh; Intel Mac OS X 10_15_7",
+    "resolucion": "1920x1080",
+    "devicePixelRatio": 1,
+    "idioma": "es-419",
+    "zonaHoraria": "America/Managua",
+    "referrer": "",
+    "coords": null,
+    "tipoRed": null,
+    "bateria": null,
+    "almacenamiento": {
+      "quota": 82463372084,
+      "usage": 0
+    },
+    "cookiesHabilitadas": true,
+    "soportaLocal": true,
+    "soportaSession": true,
+    "pestañaActiva": true,
+    "esBot": false,
+    "fingerprint": "95e1edcb16de49a76afbf3dccdc57438",
+    "modoIncognito": false,
+    "esEmulador": false,
+    "ipPublica": "186.77.180.147",
+    "permisos": {
+      "geolocation": "prompt",
+      "camera": "prompt",
+      "microphone": "prompt"
+    },
+    "tipoNavegacion": "navigate",
+    "duracionSegundos": 3,
+    "interacciones": 0,
+    "hardware": {
+      "cores": 8,
+      "memoryGB": null,
+      "gpu": "Apple GPU"
+    },
+    "soportesAPIs": {
+      "webRTC": true,
+      "webGL": true,
+      "bluetooth": false,
+      "nfc": false,
+      "midi": false
+    },
+    "ip": "::1",
+    "hora": "2025-06-07T15:49:43.091Z"
+  },
+  {
+    "nombre": "Visitante",
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.1 Safari/605.1.15",
+    "plataforma": "MacIntel",
+    "navegador": "Safari",
+    "sistemaOperativo": "Mac OS",
+    "dispositivoTipo": "desktop",
+    "dispositivoMarca": "desconocida",
+    "dispositivoModelo": "Macintosh; Intel Mac OS X 10_15_7",
+    "resolucion": "1920x1080",
+    "devicePixelRatio": 1,
+    "idioma": "es-419",
+    "zonaHoraria": "America/Managua",
+    "referrer": "",
+    "coords": null,
+    "tipoRed": null,
+    "bateria": null,
+    "almacenamiento": {
+      "quota": 82463372084,
+      "usage": 0
+    },
+    "cookiesHabilitadas": true,
+    "soportaLocal": true,
+    "soportaSession": true,
+    "pestañaActiva": false,
+    "esBot": false,
+    "fingerprint": "95e1edcb16de49a76afbf3dccdc57438",
+    "modoIncognito": false,
+    "esEmulador": false,
+    "ipPublica": "186.77.180.147",
+    "permisos": {
+      "geolocation": "prompt",
+      "camera": "prompt",
+      "microphone": "prompt"
+    },
+    "tipoNavegacion": "navigate",
+    "duracionSegundos": 3,
+    "interacciones": 0,
+    "hardware": {
+      "cores": 8,
+      "memoryGB": null,
+      "gpu": "Apple GPU"
+    },
+    "soportesAPIs": {
+      "webRTC": true,
+      "webGL": true,
+      "bluetooth": false,
+      "nfc": false,
+      "midi": false
+    },
+    "ip": "::1",
+    "hora": "2025-06-07T16:08:31.425Z"
+  },
+  {
+    "nombre": "Visitante",
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.1 Safari/605.1.15",
+    "plataforma": "MacIntel",
+    "navegador": "Safari",
+    "sistemaOperativo": "Mac OS",
+    "dispositivoTipo": "desktop",
+    "dispositivoMarca": "desconocida",
+    "dispositivoModelo": "Macintosh; Intel Mac OS X 10_15_7",
+    "resolucion": "1920x1080",
+    "devicePixelRatio": 1,
+    "idioma": "es-419",
+    "zonaHoraria": "America/Managua",
+    "referrer": "",
+    "coords": null,
+    "tipoRed": null,
+    "bateria": null,
+    "almacenamiento": {
+      "quota": 82463372084,
+      "usage": 0
+    },
+    "cookiesHabilitadas": true,
+    "soportaLocal": true,
+    "soportaSession": true,
+    "pestañaActiva": true,
+    "esBot": false,
+    "fingerprint": "95e1edcb16de49a76afbf3dccdc57438",
+    "modoIncognito": false,
+    "esEmulador": false,
+    "ipPublica": "186.77.180.147",
+    "permisos": {
+      "geolocation": "prompt",
+      "camera": "prompt",
+      "microphone": "prompt"
+    },
+    "tipoNavegacion": "navigate",
+    "duracionSegundos": 3,
+    "interacciones": 0,
+    "hardware": {
+      "cores": 8,
+      "memoryGB": null,
+      "gpu": "Apple GPU"
+    },
+    "soportesAPIs": {
+      "webRTC": true,
+      "webGL": true,
+      "bluetooth": false,
+      "nfc": false,
+      "midi": false
+    },
+    "ip": "::1",
+    "hora": "2025-06-07T16:10:29.588Z"
+  },
+  {
+    "nombre": "Visitante",
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.1 Safari/605.1.15",
+    "plataforma": "MacIntel",
+    "navegador": "Safari",
+    "sistemaOperativo": "Mac OS",
+    "dispositivoTipo": "desktop",
+    "dispositivoMarca": "desconocida",
+    "dispositivoModelo": "Macintosh; Intel Mac OS X 10_15_7",
+    "resolucion": "1920x1080",
+    "devicePixelRatio": 1,
+    "idioma": "es-419",
+    "zonaHoraria": "America/Managua",
+    "referrer": "",
+    "coords": null,
+    "tipoRed": null,
+    "bateria": null,
+    "almacenamiento": {
+      "quota": 82463372084,
+      "usage": 0
+    },
+    "cookiesHabilitadas": true,
+    "soportaLocal": true,
+    "soportaSession": true,
+    "pestañaActiva": true,
+    "esBot": false,
+    "fingerprint": "95e1edcb16de49a76afbf3dccdc57438",
+    "modoIncognito": false,
+    "esEmulador": false,
+    "ipPublica": "186.77.180.147",
+    "permisos": {
+      "geolocation": "prompt",
+      "camera": "prompt",
+      "microphone": "prompt"
+    },
+    "tipoNavegacion": "navigate",
+    "duracionSegundos": 3,
+    "interacciones": 55,
+    "hardware": {
+      "cores": 8,
+      "memoryGB": null,
+      "gpu": "Apple GPU"
+    },
+    "soportesAPIs": {
+      "webRTC": true,
+      "webGL": true,
+      "bluetooth": false,
+      "nfc": false,
+      "midi": false
+    },
+    "ip": "::1",
+    "hora": "2025-06-07T16:11:23.685Z"
+  },
+  {
+    "navegador": "Safari",
+    "sistemaOperativo": "Mac OS",
+    "tipoDispositivo": "desktop",
+    "dispositivoMarca": "Apple",
+    "dispositivoModelo": "Macintosh; Intel Mac OS X 10_15_7",
+    "idioma": "es-419",
+    "fingerprint": "TW96aWxsYS81LjAgKE1hY2ludG9zaDsgSW50ZWwgTWFjIE9TIFggMTBfMTVfNykgQXBwbGVXZWJLaXQvNjA1LjEuMTUgKEtIVE1MLCBsaWtlIEdlY2tvKSBWZXJzaW9uLzE4LjEgU2FmYXJpLzYwNS4xLjE1ZXMtNDE5MTkyMDEwODA=",
+    "coords": null,
+    "ip": "::1",
+    "hora": "2025-06-07T16:20:36.222Z"
+  },
+  {
+    "nombre": "Visitante",
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.1 Safari/605.1.15",
+    "plataforma": "MacIntel",
+    "navegador": "Safari",
+    "sistemaOperativo": "Mac OS",
+    "dispositivoTipo": "desktop",
+    "dispositivoMarca": "desconocida",
+    "dispositivoModelo": "Desconocido",
+    "resolucion": "1920x1080",
+    "devicePixelRatio": 1,
+    "idioma": "es-419",
+    "zonaHoraria": "America/Managua",
+    "referrer": null,
+    "coords": null,
+    "tipoRed": null,
+    "bateria": null,
+    "almacenamiento": {
+      "quota": 82463372084,
+      "usage": 0
+    },
+    "cookiesHabilitadas": true,
+    "soportaLocal": true,
+    "soportaSession": true,
+    "pestañaActiva": true,
+    "esBot": false,
+    "fingerprint": "TW96aWxsYS81LjAgKE1hY2ludG9zaDsgSW50ZWwgTWFjIE9TIFggMTBfMTVfNykgQXBwbGVXZWJLaXQvNjA1LjEuMTUgKEtIVE1MLCBsaWtlIEdlY2tvKSBWZXJzaW9uLzE4LjEgU2FmYXJpLzYwNS4xLjE1TWFjSW50ZWwxOTIweDEwODA=",
+    "modoIncognito": false,
+    "ipPublica": "186.77.180.147",
+    "permisos": {
+      "geolocation": "prompt",
+      "notifications": "prompt",
+      "camera": "prompt",
+      "microphone": "prompt"
+    },
+    "tipoNavegacion": "navigate",
+    "duracionSegundos": 0,
+    "interacciones": 0,
+    "hardware": {
+      "cores": 8,
+      "memory": null
+    },
+    "soportesAPIs": {
+      "battery": false,
+      "storageEstimate": true,
+      "serviceWorker": true,
+      "webGL": true
+    },
+    "ip": "::1",
+    "hora": "2025-06-07T16:41:50.430Z"
+  }
+]

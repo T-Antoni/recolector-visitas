@@ -7,79 +7,45 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(express.static('public'));
-app.use(express.json({ limit: '2mb' }));  // Subí el límite por si hay más datos
+app.use(express.json({ limit: '2mb' }));
 
-// Ruta POST para recibir datos
 app.post('/api/recibir', (req, res) => {
-  const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || '';
+  const ip = req.headers['x-forwarded-for']?.split(',')[0].trim() || req.socket.remoteAddress || '';
   const geo = geoip.lookup(ip) || null;
 
-  const ua = new UAParser(req.body.userAgent || '');
-  const deviceInfo = ua.getResult();
+  console.log('POST /api/recibir llamada desde IP:', ip);
+  console.log('Cuerpo recibido:', req.body);
 
   const visita = {
     nombre: 'Visitante',
     ip,
+    geo,
     hora: new Date().toISOString(),
-    userAgent: req.body.userAgent || '',
-    navegador: deviceInfo.browser.name + ' ' + deviceInfo.browser.version,
-    sistemaOperativo: deviceInfo.os.name + ' ' + deviceInfo.os.version,
-    plataforma: deviceInfo.device.vendor || 'Desconocida',
-    dispositivoTipo: deviceInfo.device.type || 'desktop',
-    dispositivoMarca: deviceInfo.device.vendor || 'Desconocida',
-    dispositivoModelo: deviceInfo.device.model || 'Desconocido',
-    resolucion: req.body.resolucion || '',
-    devicePixelRatio: req.body.devicePixelRatio,
-    idioma: req.body.idioma,
-    zonaHoraria: req.body.zonaHoraria,
-    referrer: req.body.referrer || '',
-    coords: req.body.coords || null,
-    tipoRed: req.body.tipoRed || null,
-    cookiesHabilitadas: req.body.cookiesHabilitadas || null,
-    soportaLocal: req.body.soportaLocal || null,
-    soportaSession: req.body.soportaSession || null,
-    pestañaActiva: req.body.pestañaActiva || null,
-    bateria: req.body.bateria || null,
-    almacenamiento: req.body.almacenamiento || null,
-    esBot: req.body.esBot || false,
-    socialFromUA: req.body.socialFromUA || null,
-    ubicacion: geo,
-
-    // NUEVAS PROPIEDADES AGREGADAS:
-    fingerprint: req.body.fingerprint || null,
-    modoIncognito: req.body.modoIncognito || null,
-    esEmulador: req.body.esEmulador || null,
-    ipPublicaCliente: req.body.ipPublica || null,
-    permisosNavegador: req.body.permisos || null,
-    tipoNavegacion: req.body.tipoNavegacion || null,
-    duracion: req.body.duracionSegundos || 0,
-    interacciones: req.body.interacciones || 0,
-    hardware: req.body.hardware || null,
-    soportesAPIs: req.body.soportesAPIs || null,
+    ...req.body,
   };
 
   fs.appendFile(path.join(__dirname, 'visitas.log'), JSON.stringify(visita) + '\n', err => {
-    if (err) console.error('Error al guardar visita:', err);
+    if (err) {
+      console.error('Error al guardar visita:', err);
+      return res.status(500).send('Error al guardar visita');
+    }
+    console.log('Visita guardada');
+    res.sendStatus(200);
   });
-
-  res.sendStatus(200);
 });
 
-// Dashboard
 app.get('/dashboard', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'dashboard.html'));
 });
 
-// Obtener visitas
 app.get('/api/visitas', (req, res) => {
   fs.readFile(path.join(__dirname, 'visitas.log'), 'utf8', (err, data) => {
     if (err) return res.status(500).json({ error: 'Error leyendo visitas' });
-    const visitas = data.trim().split('\n').map(l => JSON.parse(l)).reverse();
+    const visitas = data.trim().split('\n').filter(Boolean).map(l => JSON.parse(l)).reverse();
     res.json(visitas);
   });
 });
 
-// Iniciar servidor
 app.listen(PORT, () => {
   console.log(`Servidor escuchando en http://localhost:${PORT}`);
 });
